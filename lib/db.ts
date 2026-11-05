@@ -111,6 +111,7 @@ export async function authenticateUser(email: string) {
     where: { email },
   });
 }
+
 export async function getAdminMetrics() {
   const [totalAppointments, totalBarbers, totalLocations] = await Promise.all([
     prisma.appointment.count(),
@@ -123,4 +124,17 @@ export async function getAdminMetrics() {
     totalBarbers,
     totalLocations,
   };
+}
+
+export async function updateAppointmentStatus(id: string, status: string) {
+  return await prisma.appointment.update({
+    where: { id },
+    data: { status },
+  });
+}
+
+export async function deleteAppointment(id: string) {
+  return await prisma.appointment.delete({
+    where: { id },
+  });
 }
