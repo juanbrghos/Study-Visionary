@@ -111,3 +111,16 @@ export async function authenticateUser(email: string) {
     where: { email },
   });
 }
+export async function getAdminMetrics() {
+  const [totalAppointments, totalBarbers, totalLocations] = await Promise.all([
+    prisma.appointment.count(),
+    prisma.barber.count(),
+    prisma.location.count(),
+  ]);
+
+  return {
+    totalAppointments,
+    totalBarbers,
+    totalLocations,
+  };
+}
