@@ -39,7 +39,8 @@ export async function middleware(request: Request) {
     return NextResponse.json({ error: 'Credenciales inválidas' }, { status: 401 });
   }
 
-  const user = getUserByEmail(email);
+  // Se agrega await porque getUserByEmail es una función asíncrona de Prisma
+  const user = await getUserByEmail(email);
   if (!user || user.role !== role) {
     return NextResponse.json({ error: 'Credenciales inválidas' }, { status: 401 });
   }
@@ -67,4 +68,3 @@ export async function middleware(request: Request) {
 export const config = {
   matcher: '/api/:path*',
 };
-
