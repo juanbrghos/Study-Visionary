@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  passwordHash String
+  name         String
+  role         String    // "ADMIN", "CASHIER", "BARBER"
+  createdAt    DateTime  @default(now())
+  barber       Barber?
+}
+
+model Location {
+  id            String        @id @default(uuid())
+  name          String        @unique // "Zona 6", "Zona 5"
+  title         String        // "Sede Zona 6", "Sede Zona 5"
+  address       String
+  googleMapsUrl String
+  wazeUrl       String
+  barbers       Barber[]
+  appointments  Appointment[]
+  createdAt     DateTime      @default(now())
+}
+
+model Service {
+  id           String        @id @default(uuid())
+  name         String
+  category     String        // "Corte", "Barba y Cejas", "Tatuajes", "Uñas", "Pintado / Tinta de Pelo"
+  description  String
+  price        Float?        // null if variable
+  priceText    String        // "Q50", "Q10", "Q15", "Según diseño"
+  appointments Appointment[]
+  createdAt    DateTime      @default(now())
+}
+
+model Barber {
+  id             String        @id @default(uuid())
+  name           String
+  specialty      String
+  bio            String
+  photoUrl       String
+  locationId     String
+  location       Location      @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  userId         String?       @unique
+  user           User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  availableHours String        // JSON stringified array of slots: '["09:00 AM", "10:00 AM", ...]'
+  appointments   Appointment[]
+  createdAt      DateTime      @default(now())
+}
+
+model Appointment {
+  id          String    @id @default(uuid())
+  code        String    @unique // e.g. "VIS-1024"
+  clientName  String
+  clientPhone String
+  date        String    // "YYYY-MM-DD"
+  time        String    // "09:00 AM"
+  serviceId   String?
+  service     Service?  @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  serviceName String?   // cached name
+  barberId    String
+  barber      Barber    @relation(fields: [barberId], references: [id], onDelete: Cascade)
+  locationId  String
+  location    Location  @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  status      String    @default("PENDIENTE") // "PENDIENTE", "EN_PROCESO", "REALIZADA", "CANCELADA"
+  isWalkIn    Boolean   @default(false)
+  amountPaid  Float?
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+

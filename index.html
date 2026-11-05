@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="es" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VISIONARY Barber Shop | Citas y Gestión</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Tailwind Config for Strict Monochrome Dark Aesthetic -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#09090b',
+                        cardBg: '#121215',
+                        accentGray: '#18181b',
+                        borderGray: '#27272a',
+                        silverText: '#f4f4f5',
+                        neonWhite: '#ffffff'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'ui-monospace', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        body {
+            background-color: #09090b;
+            color: #f4f4f5;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Sleek monochrome scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #09090b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3f3f46;
+        }
+
+        ::selection {
+            background-color: #ffffff;
+            color: #000000;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-white selection:text-black">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="sticky top-0 z-40 bg-darkBg/90 backdrop-blur-md border-b border-borderGray px-4 lg:px-8 py-3.5 transition-all">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Brand Logo with Fallback to SVG -->
+            <a href="#" onclick="showSection('public'); return false;" class="flex items-center gap-3 group">
+                <img src="logo.jpg" 
+                     alt="VISIONARY Logo" 
+                     class="h-10 md:h-11 w-auto object-contain filter brightness-110 contrast-125 rounded"
+                     onerror="this.onerror=null; this.style.display='none'; document.getElementById('navbar-logo-fallback').classList.remove('hidden');" />
+                <div id="navbar-logo-fallback" class="hidden flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-700 flex items-center justify-center font-black text-xl text-white tracking-widest shadow-inner">
+                        <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M4 4l8 16 8-16" />
+                            <path d="M12 10l-4-4" />
+                            <path d="M12 10l4-4" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="hidden sm:flex flex-col">
+                    <span class="text-base font-black tracking-widest text-white leading-tight">VISIONARY</span>
+                    <span class="text-[9px] font-mono tracking-widest text-zinc-400 uppercase">BARBER SHOP</span>
+                </div>
+            </a>
+
+            <!-- Nav Links -->
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-400">
+                <a href="#servicios" onclick="showSection('public')" class="hover:text-white transition-colors">Servicios</a>
+                <a href="#sedes" onclick="showSection('public')" class="hover:text-white transition-colors">Sedes & Waze</a>
+                <a href="#barberos" onclick="showSection('public')" class="hover:text-white transition-colors">Barberos</a>
+                <a href="#barberos" onclick="showSection('public')" class="px-3.5 py-1.5 rounded-lg bg-white text-black font-semibold text-xs uppercase tracking-wider hover:bg-zinc-200 transition-all shadow-md">Agendar Cita</a>
+            </nav>
+
+            <!-- Actions: Staff Portal -->
+            <div class="flex items-center gap-3">
+                <button id="staff-portal-btn" onclick="openLoginModal()" 
+                        class="px-4 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider border border-zinc-700 bg-zinc-900 text-zinc-300 hover:text-white hover:border-zinc-500 hover:bg-zinc-800 transition-all flex items-center gap-2 shadow-sm">
+                    <i data-lucide="shield-check" class="w-4 h-4 text-zinc-400"></i>
+                    <span id="staff-btn-text">Acceso Staff</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- PUBLIC CLIENT VIEW -->
+    <main id="public-view" class="flex-grow">
+        
+        <!-- HERO SECTION -->
+        <section class="relative py-20 md:py-28 px-4 overflow-hidden border-b border-borderGray bg-gradient-to-b from-zinc-950 via-darkBg to-darkBg">
+            <div class="max-w-5xl mx-auto text-center relative z-10">
+                <span class="inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-widest bg-zinc-900 text-zinc-300 rounded-full border border-borderGray mb-6 shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+                    <span>Barbería Urbana & Arte Corporal</span>
+                </span>
+                
+                <!-- Main Center Logo -->
+                <div class="my-6 flex justify-center">
+                    <img src="logo.jpg" 
+                         alt="VISIONARY" 
+                         class="max-h-24 md:max-h-32 object-contain drop-shadow-[0_10px_25px_rgba(255,255,255,0.06)] rounded"
+                         onerror="this.style.display='none'; document.getElementById('hero-fallback-text').classList.remove('hidden');" />
+                    <div id="hero-fallback-text" class="hidden text-5xl md:text-7xl font-black tracking-tighter text-white uppercase">
+                        VI<span class="text-zinc-500">⚡</span>IONARY
+                    </div>
+                </div>
+
+                <h1 class="text-3xl sm:text-5xl md:text-6xl font-black tracking-tighter text-white uppercase max-w-4xl mx-auto leading-tight mb-4">
+                    PRECISIÓN PURA. <span class="text-zinc-500 font-extralight">ESTILO MONOCROMÁTICO.</span>
+                </h1>
+
+                <p class="text-zinc-400 text-base md:text-lg max-w-2xl mx-auto mb-10 leading-relaxed font-light">
+                    Reserva tu cita en línea en cualquiera de nuestras dos sedes. Elegancia moderna, barberos experimentados, afeitado a navaja, diseño de cejas, tatuajes y colorimetría.
+                </p>
+
+                <!-- Quick Actions -->
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-xl mx-auto mb-12">
+                    <a href="#servicios" class="w-full sm:w-auto px-8 py-4 bg-white text-black font-bold rounded-xl text-xs uppercase tracking-widest hover:bg-zinc-200 transition-all flex items-center justify-center gap-2 shadow-xl">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i>
+                        <span>Ver Menú de Servicios</span>
+                    </a>
+                    <a href="#sedes" class="w-full sm:w-auto px-6 py-4 bg-zinc-900 border border-zinc-700 text-zinc-300 font-bold rounded-xl text-xs uppercase tracking-widest hover:bg-zinc-800 hover:text-white transition-all flex items-center justify-center gap-2">
+                        <i data-lucide="navigation" class="w-4 h-4"></i>
+                        <span>Navegación Waze & Sedes</span>
+                    </a>
+                </div>
+
+                <!-- Branch Quick Selector Buttons -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl mx-auto text-left">
+                    <button onclick="setBranchFilter('Zona 6')" 
+                            class="p-5 rounded-2xl border border-borderGray bg-zinc-900/60 hover:bg-zinc-900 hover:border-zinc-500 transition-all flex items-center justify-between group shadow-sm">
+                        <div>
+                            <div class="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">Sede 01</div>
+                            <div class="text-xl font-bold text-white mt-0.5">Sede Zona 6</div>
+                            <div class="text-xs text-zinc-400 mt-1">Calle Real & 15 Avenida • 3 Barberos</div>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-400 group-hover:text-white transition-all">
+                            <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-0.5 transition-transform"></i>
+                        </div>
+                    </button>
+
+                    <button onclick="setBranchFilter('Zona 5')" 
+                            class="p-5 rounded-2xl border border-borderGray bg-zinc-900/60 hover:bg-zinc-900 hover:border-zinc-500 transition-all flex items-center justify-between group shadow-sm">
+                        <div>
+                            <div class="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">Sede 02</div>
+                            <div class="text-xl font-bold text-white mt-0.5">Sede Zona 5</div>
+                            <div class="text-xs text-zinc-400 mt-1">Bulevar Central • 3 Barberos</div>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-400 group-hover:text-white transition-all">
+                            <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-0.5 transition-transform"></i>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SERVICES & PRICING SECTION -->
+        <section id="servicios" class="max-w-7xl mx-auto px-4 py-20 border-b border-borderGray">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+                <div>
+                    <span class="text-xs font-mono uppercase tracking-widest text-zinc-500 block mb-2">Catálogo Oficial</span>
+                    <h2 class="text-3xl md:text-4xl font-black text-white uppercase tracking-tight">Menú de Servicios & Precios</h2>
+                    <p className="text-zinc-400 text-sm mt-2 max-w-xl">
+                        Tarifas transparentes. Selecciona tu servicio para reservar con el barbero especialista en cualquiera de las sedes.
+                    </p>
+                </div>
+                <div id="service-selected-pill" class="hidden px-4 py-2 bg-zinc-800 border border-zinc-600 rounded-xl text-xs font-mono text-white flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-white"></span>
+                    <span id="service-selected-name">Servicio Seleccionado</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="services-grid">
+                <!-- Rendered Dynamically via JS -->
+            </div>
+        </section>
+
+        <!-- LOCATIONS & WAZE NAVIGATION SECTION -->
+        <section id="sedes" class="max-w-7xl mx-auto px-4 py-20 border-b border-borderGray">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="text-xs font-mono uppercase tracking-widest text-zinc-500 block mb-2">Ubicaciones Estratégicas</span>
+                <h2 class="text-3xl md:text-4xl font-black text-white uppercase tracking-tight">Nuestras Sedes & Navegación GPS</h2>
+                <p class="text-zinc-400 text-sm mt-3 leading-relaxed">
+                    Abre la dirección directa en Google Maps o inicia la navegación giro a giro en Waze en tu teléfono celular.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Sede Zona 6 -->
+                <div class="p-8 rounded-2xl border border-borderGray bg-cardBg hover:border-zinc-700 transition-all flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-xl bg-zinc-900 border border-zinc-700 flex items-center justify-center text-white">
+                                    <i data-lucide="map-pin" class="w-6 h-6"></i>
+                                </div>
+                                <div>
+                                    <span class="text-[10px] font-mono uppercase tracking-wider text-zinc-500 block">Local Oficial 01</span>
+                                    <h3 class="text-2xl font-black text-white uppercase">Sede Zona 6</h3>
+                                </div>
+                            </div>
+                            <span class="text-xs font-mono px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300">
+                                3 Barberos
+                            </span>
+                        </div>
+
+                        <p class="text-sm text-zinc-300 font-medium mb-1">Calle Real y 15 Avenida</p>
+                        <p class="text-xs text-zinc-400 mb-6 font-mono leading-relaxed">Calle Real y 15 Avenida, Zona 6, Ciudad de Guatemala</p>
+
+                        <div class="space-y-3 mb-8 bg-zinc-900/60 p-4 rounded-xl border border-zinc-800 text-xs text-zinc-300">
+                            <div class="flex items-start gap-2.5">
+                                <i data-lucide="clock" class="w-4 h-4 text-zinc-500 shrink-0 mt-0.5"></i>
+                                <span>Lunes a Sábado: 8:30 AM - 7:30 PM | Domingos: 9:00 AM - 3:00 PM</span>
+                            </div>
+                            <div class="flex items-start gap-2.5">
+                                <i data-lucide="users" class="w-4 h-4 text-zinc-500 shrink-0 mt-0.5"></i>
+                                <span>Equipo: <strong class="text-white">Carlos Ruiz • David Morales • Mateo López</strong></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 pt-4 border-t border-borderGray">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <a href="https://maps.app.goo.gl/kr8xpP1SEefd2QdE6" target="_blank" rel="noopener noreferrer"
+                               class="p-3.5 rounded-xl border border-zinc-700 bg-zinc-900 text-white text-xs font-bold uppercase tracking-wider hover:bg-zinc-800 hover:border-zinc-500 transition-all flex items-center justify-center gap-2">
+                                <i data-lucide="external-link" class="w-4 h-4 text-zinc-400"></i>
+                                <span>Google Maps</span>
+                            </a>
+                            <a href="https://waze.com/ul?q=https://maps.app.goo.gl/kr8xpP1SEefd2QdE6" target="_blank" rel="noopener noreferrer"
+                               class="p-3.5 rounded-xl border border-zinc-700 bg-zinc-900 text-white text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-black hover:border-white transition-all flex items-center justify-center gap-2 group">
+                                <i data-lucide="navigation" class="w-4 h-4 text-zinc-400 group-hover:text-black transition-colors"></i>
+                                <span>Ruta en Waze</span>
+                            </a>
+                        </div>
+                        <button onclick="setBranchFilter('Zona 6')" class="w-full py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 hover:text-white text-xs font-bold uppercase tracking-wider transition-all">
+                            Ver Barberos de Zona 6
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sede Zona 5 -->
+                <div class="p-8 rounded-2xl border border-borderGray bg-cardBg hover:border-zinc-700 transition-all flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-xl bg-zinc-900 border border-zinc-700 flex items-center justify-center text-white">
+                                    <i data-lucide="map-pin" class="w-6 h-6"></i>
+                                </div>
+                                <div>
+                                    <span class="text-[10px] font-mono uppercase tracking-wider text-zinc-500 block">Local Oficial 02</span>
+                                    <h3 class="text-2xl font-black text-white uppercase">Sede Zona 5</h3>
+                                </div>
+                            </div>
+                            <span class="text-xs font-mono px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300">
+                                3 Barberos
+                            </span>
+                        </div>
+
+                        <p class="text-sm text-zinc-300 font-medium mb-1">Bulevar Central Los Jardines</p>
+                        <p class="text-xs text-zinc-400 mb-6 font-mono leading-relaxed">Bulevar Los Jardines 22-10, Zona 5, Ciudad de Guatemala</p>
+
+                        <div class="space-y-3 mb-8 bg-zinc-900/60 p-4 rounded-xl border border-zinc-800 text-xs text-zinc-300">
+                            <div class="flex items-start gap-2.5">
+                                <i data-lucide="clock" class="w-4 h-4 text-zinc-500 shrink-0 mt-0.5"></i>
+                                <span>Lunes a Sábado: 9:00 AM - 8:00 PM | Domingos: Cerrado</span>
+                            </div>
+                            <div class="flex items-start gap-2.5">
+                                <i data-lucide="users" class="w-4 h-4 text-zinc-500 shrink-0 mt-0.5"></i>
+                                <span>Equipo: <strong class="text-white">Javier Gómez • Andrés Pérez • Samuel Hernández</strong></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 pt-4 border-t border-borderGray">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <a href="https://maps.app.goo.gl/eNorgV6reEc4xdWV7" target="_blank" rel="noopener noreferrer"
+                               class="p-3.5 rounded-xl border border-zinc-700 bg-zinc-900 text-white text-xs font-bold uppercase tracking-wider hover:bg-zinc-800 hover:border-zinc-500 transition-all flex items-center justify-center gap-2">
+                                <i data-lucide="external-link" class="w-4 h-4 text-zinc-400"></i>
+                                <span>Google Maps</span>
+                            </a>
+                            <a href="https://waze.com/ul?q=https://maps.app.goo.gl/eNorgV6reEc4xdWV7" target="_blank" rel="noopener noreferrer"
+                               class="p-3.5 rounded-xl border border-zinc-700 bg-zinc-900 text-white text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-black hover:border-white transition-all flex items-center justify-center gap-2 group">
+                                <i data-lucide="navigation" class="w-4 h-4 text-zinc-400 group-hover:text-black transition-colors"></i>
+                                <span>Ruta en Waze</span>
+                            </a>
+                        </div>
+                        <button onclick="setBranchFilter('Zona 5')" class="w-full py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 hover:text-white text-xs font-bold uppercase tracking-wider transition-all">
+                            Ver Barberos de Zona 5
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BARBERS & REAL-TIME BOOKING SECTION -->
+        <section id="barberos" class="max-w-7xl mx-auto px-4 py-20">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 pb-6 border-b border-borderGray gap-6">
+                <div>
+                    <div class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-zinc-500 mb-2">
+                        <span>Disponibilidad en Vivo</span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-black text-white uppercase tracking-tight">Nuestros 6 Barberos Especialistas</h2>
+                    <p class="text-zinc-400 text-sm mt-2">Selecciona un horario libre. Al reservar, el bloque queda ocupado en tiempo real.</p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-3">
+                    <!-- Branch Toggle Tabs -->
+                    <div class="flex bg-zinc-900 p-1 rounded-xl border border-borderGray">
+                        <button onclick="setBranchFilter('ALL')" id="tab-all" class="px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all bg-white text-black shadow-sm">Todas</button>
+                        <button onclick="setBranchFilter('Zona 6')" id="tab-z6" class="px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all text-zinc-400 hover:text-white">Zona 6</button>
+                        <button onclick="setBranchFilter('Zona 5')" id="tab-z5" class="px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all text-zinc-400 hover:text-white">Zona 5</button>
+                    </div>
+
+                    <!-- Date input -->
+                    <div class="flex items-center gap-2 bg-zinc-900 border border-borderGray px-3 py-2 rounded-xl">
+                        <i data-lucide="calendar" class="w-4 h-4 text-zinc-400"></i>
+                        <input type="date" id="calendar-date-picker" onchange="handleDateChange(this.value)" class="bg-transparent text-xs text-white focus:outline-none font-mono cursor-pointer" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Barber Cards Grid -->
+            <div id="barbers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Rendered dynamically via JS -->
+            </div>
+        </section>
+    </main>
+
+    <!-- STAFF PRIVATE DASHBOARD VIEW (HIDDEN BY DEFAULT) -->
+    <main id="staff-view" class="hidden flex-grow max-w-7xl mx-auto w-full px-4 py-8">
+        
+        <!-- Staff Header Bar -->
+        <div class="bg-cardBg rounded-2xl border border-borderGray p-6 mb-8 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-2xl bg-zinc-900 border border-zinc-700 flex items-center justify-center text-white shadow-inner">
+                    <i data-lucide="user-check" class="w-7 h-7 text-zinc-300"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h2 id="current-user-name" class="text-xl font-bold text-white">Usuario Staff</h2>
+                        <span id="current-user-role-badge" class="px-2.5 py-0.5 text-[10px] font-mono rounded-full bg-zinc-800 text-zinc-300 border border-zinc-700 uppercase tracking-wider">ROL</span>
+                    </div>
+                    <p id="current-user-subtext" class="text-xs text-zinc-400 font-mono mt-0.5">sesion@visionary.com</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button onclick="showSection('public')" class="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider bg-zinc-900 text-zinc-300 border border-zinc-800 rounded-xl hover:text-white hover:bg-zinc-800 transition-all">
+                    Ver Sitio Público
+                </button>
+                <button onclick="logoutStaff()" class="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider bg-zinc-900 text-zinc-300 border border-zinc-800 rounded-xl hover:text-white hover:bg-zinc-800 transition-all flex items-center gap-2">
+                    <i data-lucide="log-out" class="w-4 h-4"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+
+        <!-- 1. BARBER SPECIFIC PANEL -->
+        <div id="panel-barber" class="staff-panel hidden space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <span class="text-xs font-mono uppercase tracking-widest text-zinc-500 block mb-1">Agenda de Barbero</span>
+                    <h3 class="text-2xl font-black text-white uppercase tracking-tight flex items-center gap-2">
+                        <i data-lucide="calendar" class="w-6 h-6 text-zinc-400"></i> Mis Citas Asignadas
+                    </h3>
+                </div>
+                <span class="text-xs text-zinc-400 font-mono bg-zinc-900 border border-zinc-800 px-3.5 py-2 rounded-xl" id="barber-today-date">--/--/----</span>
+            </div>
+
+            <div class="bg-cardBg rounded-2xl border border-borderGray overflow-hidden shadow-sm">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-zinc-300">
+                        <thead class="bg-zinc-900/90 text-[11px] uppercase font-mono text-zinc-400 border-b border-borderGray">
+                            <tr>
+                                <th class="p-4">Hora & Fecha</th>
+                                <th class="p-4">Cliente</th>
+                                <th class="p-4">Teléfono</th>
+                                <th class="p-4">Servicio</th>
+                                <th class="p-4">Sede</th>
+                                <th class="p-4">Estado</th>
+                                <th class="p-4 text-right">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="barber-appointments-list" class="divide-y divide-zinc-800/60 font-mono text-xs">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. CASHIER / RECEPCIÓN PANEL -->
+        <div id="panel-cashier" class="staff-panel hidden space-y-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <!-- Appointment Lookup & Checkout (2 Cols) -->
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div>
+                            <span class="text-xs font-mono uppercase tracking-widest text-zinc-500 block mb-0.5">Módulo de Caja</span>
+                            <h3 class="text-xl font-black text-white uppercase tracking-tight flex items-center gap-2">
+                                <i data-lucide="dollar-sign" class="w-5 h-5 text-zinc-400"></i> Confirmación y Cobro de Citas
+                            </h3>
+                        </div>
+                        <!-- Search input -->
+                        <div class="relative w-full sm:w-72">
+                            <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-3 text-zinc-500"></i>
+                            <input type="text" id="cashier-search" onkeyup="filterCashierAppointments()" placeholder="Buscar cliente o teléfono..." 
+                                   class="w-full bg-zinc-900 border border-borderGray text-xs text-white pl-10 pr-4 py-2.5 rounded-xl focus:outline-none focus:border-zinc-500 font-mono">
+                        </div>
+                    </div>
+
+                    <div class="bg-cardBg rounded-2xl border border-borderGray overflow-hidden shadow-sm">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm text-zinc-300">
+                                <thead class="bg-zinc-900/90 text-[11px] uppercase font-mono text-zinc-400 border-b border-borderGray">
+                                    <tr>
+                                        <th class="p-4">Cliente / Tel</th>
+                                        <th class="p-4">Barbero</th>
+                                        <th class="p-4">Sede</th>
+                                        <th class="p-4">Fecha / Hora</th>
+                                        <th class="p-4">Estado</th>
+                                        <th class="p-4 text-right">Cobro</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cashier-appointments-list" class="divide-y divide-zinc-800/60 font-mono text-xs">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Walk-In Quick Register Form (1 Col) -->
+                <div class="bg-cardBg rounded-2xl border border-borderGray p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 mb-2 text-white font-black text-lg uppercase tracking-tight">
+                            <i data-lucide="user-plus" class="w-5 h-5 text-zinc-400"></i>
+                            <span>Corte Sin Cita (Walk-in)</span>
+                        </div>
+                        <p class="text-xs text-zinc-400 mb-6 leading-relaxed">
+                            Para clientes que llegan directo al local sin previa reserva online.
+                        </p>
+
+                        <form id="walk-in-form" onsubmit="handleWalkInSubmit(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-mono uppercase text-zinc-400 mb-1">Nombre del Cliente</label>
+                                <input type="text" id="walkin-client" required placeholder="Ej. Mario Estrada" class="w-full bg-zinc-900 border border-borderGray text-xs text-white p-3 rounded-xl focus:border-zinc-500 focus:outline-none">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-mono uppercase text-zinc-400 mb-1">Barbero que Atendió</label>
+                                <select id="walkin-barber" required class="w-full bg-zinc-900 border border-borderGray text-xs text-white p-3 rounded-xl focus:border-zinc-500 focus:outline-none">
+                                    <!-- Dynamic options -->
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-mono uppercase text-zinc-400 mb-1">Servicio Realizado</label>
+                                <select id="walkin-service" required class="w-full bg-zinc-900 border border-borderGray text-xs text-white p-3 rounded-xl focus:border-zinc-500 focus:outline-none">
+                                    <option value="Corte de Cabello Normal / Fade">Corte de Cabello Normal / Fade (Q50)</option>
+                                    <option value="Retoque de Cejas">Retoque de Cejas (Q10)</option>
+                                    <option value="Arreglo & Perfilado de Barba">Arreglo & Perfilado de Barba (Q15)</option>
+                                    <option value="Tatuajes Artísticos">Tatuajes Artísticos (Según diseño)</option>
+                                    <option value="Diseño & Cuidado de Uñas">Diseño & Cuidado de Uñas (Según diseño)</option>
+                                    <option value="Pintado / Tinta de Pelo">Pintado / Tinta de Pelo (Según diseño)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-mono uppercase text-zinc-400 mb-1">Monto Cobrado (Quetzales - Q)</label>
+                                <input type="number" id="walkin-amount" required value="50" class="w-full bg-zinc-900 border border-borderGray text-sm text-white p-3 rounded-xl focus:border-zinc-500 focus:outline-none font-mono font-bold">
+                            </div>
+
+                            <button type="submit" class="w-full py-3.5 bg-white text-black font-bold rounded-xl text-xs uppercase tracking-wider hover:bg-zinc-200 transition-all flex items-center justify-center gap-2 shadow-lg">
+                                <i data-lucide="check-circle" class="w-4 h-4"></i> Registrar Corte & Facturar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. ADMIN PANEL -->
+        <div id="panel-admin" class="staff-panel hidden space-y-8">
+            
+            <!-- Dashboard Stats Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <div class="bg-cardBg p-6 rounded-2xl border border-borderGray shadow-sm">
+                    <span class="text-[10px] font-mono uppercase tracking-widest text-zinc-500 block mb-1">Total Citas Registradas</span>
+                    <div class="text-4xl font-black text-white font-mono" id="stat-total-citas">0</div>
+                    <div class="text-xs text-zinc-400 mt-2 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span> Sincronizado en vivo
+                    </div>
+                </div>
+
+                <div class="bg-cardBg p-6 rounded-2xl border border-borderGray shadow-sm">
+                    <span class="text-[10px] font-mono uppercase tracking-widest text-zinc-500 block mb-1">Cortes Completados</span>
+                    <div class="text-4xl font-black text-white font-mono" id="stat-citas-completadas">0</div>
+                    <div class="text-xs text-zinc-400 mt-2">Citas confirmadas & cobradas</div>
+                </div>
+
+                <div class="bg-cardBg p-6 rounded-2xl border border-borderGray shadow-sm">
+                    <span class="text-[10px] font-mono uppercase tracking-widest text-zinc-500 block mb-1">Ingresos Estimados (Q)</span>
+                    <div class="text-4xl font-black text-white font-mono" id="stat-ingresos">Q0</div>
+                    <div class="text-xs text-zinc-400 mt-2">Facturación acumulada</div>
+                </div>
+
+                <div class="bg-cardBg p-6 rounded-2xl border border-borderGray shadow-sm">
+                    <span class="text-[10px] font-mono uppercase tracking-widest text-zinc-500 block mb-1">Distribución por Sede</span>
+                    <div class="text-sm font-bold text-zinc-300 mt-2 flex justify-between">
+                        <span>Zona 6: <strong class="text-white" id="stat-z6">0</strong></span>
+                        <span>Zona 5: <strong class="text-white" id="stat-z5">0</strong></span>
+                    </div>
+                    <div class="w-full bg-zinc-800 h-2.5 rounded-full mt-3 overflow-hidden flex">
+                        <div id="bar-z6" class="bg-white h-full" style="width: 50%"></div>
+                        <div id="bar-z5" class="bg-zinc-600 h-full" style="width: 50%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Master Appointments Table -->
+            <div class="space-y-4">
+                <h3 class="text-xl font-black text-white uppercase tracking-tight flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <i data-lucide="sliders" class="w-5 h-5 text-zinc-400"></i> Control General de Servicios
+                    </span>
+                </h3>
+
+                <div class="bg-cardBg rounded-2xl border border-borderGray overflow-hidden shadow-sm">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-zinc-300">
+                            <thead class="bg-zinc-900/90 text-[11px] uppercase font-mono text-zinc-400 border-b border-borderGray">
+                                <tr>
+                                    <th class="p-4">ID</th>
+                                    <th class="p-4">Cliente</th>
+                                    <th class="p-4">Barbero</th>
+                                    <th class="p-4">Sede</th>
+                                    <th class="p-4">Fecha/Hora</th>
+                                    <th class="p-4">Servicio</th>
+                                    <th class="p-4">Estado</th>
+                                    <th class="p-4 text-right">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-appointments-list" class="divide-y divide-zinc-800/60 font-mono text-xs">
+                                <!-- Dynamic List -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-darkBg border-t border-borderGray py-12 px-4 text-xs text-zinc-500">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <span class="font-black text-white tracking-widest uppercase">VISIONARY BARBER SHOP</span>
+                <span>• Sede Zona 6 & Sede Zona 5</span>
+            </div>
+            <p>© <span id="year"></span> VISIONARY. Estética Monocromática & Precisión Urbana.</p>
+        </div>
+    </footer>
+
+    <!-- MODAL: BOOKING (CLIENT) -->
+    <div id="booking-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-cardBg border border-borderGray w-full max-w-lg rounded-2xl p-6 sm:p-8 shadow-2xl relative animate-in fade-in zoom-in-95 duration-150">
+            <button onclick="closeBookingModal()" class="absolute right-5 top-5 p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="flex items-center gap-4 mb-6 pb-6 border-b border-borderGray">
+                <img id="modal-barber-img" src="" class="w-14 h-14 rounded-2xl object-cover border border-zinc-700 grayscale contrast-125">
+                <div>
+                    <span id="modal-barber-branch" class="px-2 py-0.5 text-[10px] font-mono rounded bg-zinc-900 border border-zinc-700 text-zinc-300 uppercase">Sede</span>
+                    <h3 class="text-xl font-bold text-white mt-1" id="modal-barber-name">Barbero</h3>
+                    <p class="text-xs text-zinc-400" id="modal-barber-spec">Especialidad</p>
+                </div>
+            </div>
+
+            <form id="booking-form" onsubmit="confirmBooking(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-mono uppercase text-zinc-400 mb-1.5">Servicio a Reservar</label>
+                    <select id="client-service-select" class="w-full bg-zinc-900 border border-borderGray text-xs text-white p-3.5 rounded-xl focus:outline-none focus:border-zinc-500 font-medium">
+                        <option value="Corte de Cabello Normal / Fade">Corte de Cabello Normal / Fade (Q50)</option>
+                        <option value="Retoque de Cejas">Retoque de Cejas (Q10)</option>
+                        <option value="Arreglo & Perfilado de Barba">Arreglo & Perfilado de Barba (Q15)</option>
+                        <option value="Tatuajes Artísticos">Tatuajes Artísticos (Según diseño)</option>
+                        <option value="Diseño & Cuidado de Uñas">Diseño & Cuidado de Uñas (Según diseño)</option>
+                        <option value="Pintado / Tinta de Pelo">Pintado / Tinta de Pelo (Según diseño)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-mono uppercase text-zinc-400 mb-1.5">Nombre Completo</label>
+                    <input type="text" id="client-name" required placeholder="Tu nombre y apellido" class="w-full bg-zinc-900 border border-borderGray text-sm text-white p-3.5 rounded-xl focus:outline-none focus:border-zinc-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-mono uppercase text-zinc-400 mb-1.5">Teléfono / WhatsApp</label>
+                    <input type="tel" id="client-phone" required placeholder="Ej. 55443322" class="w-full bg-zinc-900 border border-borderGray text-sm text-white p-3.5 rounded-xl focus:outline-none focus:border-zinc-500 font-mono">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-mono uppercase text-zinc-400 mb-1.5">Fecha</label>
+                        <input type="date" id="booking-date" required class="w-full bg-zinc-900 border border-borderGray text-xs text-white p-3.5 rounded-xl focus:outline-none focus:border-zinc-500 font-mono">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-mono uppercase text-zinc-400 mb-1.5">Hora Seleccionada</label>
+                        <input type="text" id="booking-time" readonly required class="w-full bg-zinc-950 border border-zinc-800 text-xs text-zinc-200 font-bold font-mono p-3.5 rounded-xl focus:outline-none cursor-not-allowed">
+                    </div>
+                </div>
+
+                <div class="pt-4 flex gap-3">
+                    <button type="button" onclick="closeBookingModal()" class="w-1/2 py-3.5 border border-zinc-800 rounded-xl text-xs font-semibold text-zinc-400 hover:bg-zinc-900 hover:text-white transition-all uppercase tracking-wider">Cancelar</button>
+                    <button type="submit" class="w-1/2 py-3.5 bg-white text-black font-bold rounded-xl text-xs uppercase tracking-wider hover:bg-zinc-200 transition-all shadow-lg">Confirmar Cita</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: SUCCESSFUL BOOKING CONFIRMATION -->
+    <div id="success-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-cardBg border border-borderGray w-full max-w-md rounded-2xl p-6 text-center space-y-5">
+            <div class="w-16 h-16 bg-zinc-900 text-white border border-zinc-700 rounded-full flex items-center justify-center mx-auto shadow-inner">
+                <i data-lucide="check" class="w-8 h-8"></i>
+            </div>
+
+            <div>
+                <span class="text-[10px] font-mono uppercase tracking-widest text-zinc-500 block mb-1">Confirmación Inmediata</span>
+                <h3 class="text-2xl font-black text-white uppercase tracking-tight">¡Cita Reservada con Éxito!</h3>
+                <p class="text-xs text-zinc-400 mt-1 leading-relaxed">El horario ha quedado bloqueado en la base de datos de VISIONARY.</p>
+            </div>
+
+            <div id="success-details" class="bg-zinc-900/90 p-4 rounded-xl text-left text-xs space-y-2 border border-zinc-800 font-mono text-zinc-300">
+                <!-- Injected via JS -->
+            </div>
+
+            <div class="flex flex-col gap-3 pt-2">
+                <a id="whatsapp-link" href="#" target="_blank" class="w-full py-3.5 bg-white text-black font-bold rounded-xl text-xs uppercase tracking-wider hover:bg-zinc-200 transition-all flex items-center justify-center gap-2 shadow-lg">
+                    <i data-lucide="message-square" class="w-4 h-4"></i> Enviar Confirmación por WhatsApp
+                </a>
+                <button onclick="closeSuccessModal()" class="w-full py-2.5 text-xs text-zinc-400 hover:text-white uppercase font-mono tracking-wider">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: STAFF LOGIN (AUTHENTICATED WITH PASSWORDS) -->
+    <div id="login-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-cardBg border border-borderGray w-full max-w-md rounded-2xl p-6 sm:p-8 shadow-2xl relative">
+            <button onclick="closeLoginModal()" class="absolute right-4 top-4 p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 bg-zinc-900 border border-zinc-700 rounded-xl flex items-center justify-center text-white mx-auto mb-3 shadow-inner">
+                    <i data-lucide="lock" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-2xl font-black text-white uppercase tracking-tight">Acceso Privado Staff</h3>
+                <p class="text-xs text-zinc-400 mt-1">Ingresa tus credenciales oficiales de VISIONARY</p>
+            </div>
+
+            <div id="login-error-msg" class="hidden mb-4 p-3 rounded-xl bg-zinc-900 border border-zinc-700 text-zinc-200 text-xs">
+                Credenciales inválidas. Verifica tu usuario y contraseña.
+            </div>
+
+            <form id="staff-login-form" onsubmit="executeLogin(event)" class="space-y-4 mb-6">
+                <div>
+                    <label class="block text-xs font-mono uppercase text-zinc-400 mb-1">Correo Electrónico</label>
+                    <input type="email" id="login-email" required placeholder="admin@visionary.com" class="w-full bg-zinc-900 border border-borderGray text-xs text-white p-3.5 rounded-xl focus:outline-none focus:border-zinc-500 font-mono">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-mono uppercase text-zinc-400 mb-1">Contraseña</label>
+                    <input type="password" id="login-pass" required placeholder="••••••••••••" class="w-full bg-zinc-900 border border-borderGray text-xs text-white p-3.5 rounded-xl focus:outline-none focus:border-zinc-500 font-mono">
+                </div>
+
+                <button type="submit" class="w-full py-3.5 bg-white text-black font-bold rounded-xl text-xs uppercase tracking-wider hover:bg-zinc-200 transition-all shadow-lg">
+                    Iniciar Sesión
+                </button>
+            </form>
+
+            
+    </div>
+
+    <!-- APPLICATION LOGIC -->
+    <script>
+        // SERVICES DATA
+        const initialServices = [
+            { id: 'srv-corte', name: 'Corte de Cabello Normal / Fade', category: 'Corte de Cabello', priceText: 'Q50', price: 50, desc: 'Corte completo a tijera y máquina con perfilado y peinado con cera mate.' },
+            { id: 'srv-cejas', name: 'Retoque de Cejas', category: 'Barba y Cejas', priceText: 'Q10', price: 10, desc: 'Delineado preciso a navaja libre para una mirada limpia y masculina.' },
+            { id: 'srv-barba', name: 'Arreglo & Perfilado de Barba', category: 'Barba y Cejas', priceText: 'Q15', price: 15, desc: 'Ritual con toalla caliente, aceites esenciales hidratantes y afeitado tradicional.' },
+            { id: 'srv-tatuajes', name: 'Tatuajes Artísticos', category: 'Tatuajes', priceText: 'Según diseño', price: null, desc: 'Fine-line, microrealismo y blackwork con tintas prémium e higiene clínica.' },
+            { id: 'srv-unas', name: 'Diseño & Cuidado de Uñas', category: 'Uñas', priceText: 'Según diseño', price: null, desc: 'Manicura urbana unisex, limpieza profunda y diseños personalizados.' },
+            { id: 'srv-pelo', name: 'Pintado / Tinta de Pelo', category: 'Pintado / Tinta de Pelo', priceText: 'Según diseño', price: null, desc: 'Decoloración platinada, tonos cenizos, color fantasía o cobertura de canas.' }
+        ];
+
+        // 6 OFFICIAL BARBERS (3 IN ZONA 6, 3 IN ZONA 5)
+        const initialBarbers = [
+            // ZONA 6
+            {
+                id: 'barber-z6-1',
+                name: 'Carlos Ruiz',
+                email: 'carlos.z6@visionary.com',
+                pass: 'BarberZ6#1',
+                branch: 'Zona 6',
+                specialty: 'Especialista Fade & Diseños',
+                bio: 'Pionero en fades milimétricos al ras y grecas artísticas con navaja libre.',
+                photo: 'https://images.unsplash.com/photo-1503443207922-dff7d543fd0e?auto=format&fit=crop&q=80&w=400',
+                hours: ['09:00 AM', '10:00 AM', '11:00 AM', '01:00 PM', '02:00 PM', '03:30 PM', '05:00 PM', '06:30 PM']
+            },
+            {
+                id: 'barber-z6-2',
+                name: 'David Morales',
+                email: 'david.z6@visionary.com',
+                pass: 'BarberZ6#2',
+                branch: 'Zona 6',
+                specialty: 'Especialista Barba & Tijera',
+                bio: 'Maestro del ritual con toalla caliente, perfilado milimétrico y corte clásico.',
+                photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400',
+                hours: ['09:30 AM', '10:30 AM', '11:30 AM', '02:00 PM', '03:00 PM', '04:30 PM', '06:00 PM']
+            },
+            {
+                id: 'barber-z6-3',
+                name: 'Mateo López',
+                email: 'mateo.z6@visionary.com',
+                pass: 'BarberZ6#3',
+                branch: 'Zona 6',
+                specialty: 'Colorimetría & Freestyle',
+                bio: 'Experto en platinados cenizos, decoloración capilar y líneas vanguardistas.',
+                photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400',
+                hours: ['10:00 AM', '11:00 AM', '01:30 PM', '03:00 PM', '04:00 PM', '05:30 PM']
+            },
+            // ZONA 5
+            {
+                id: 'barber-z5-1',
+                name: 'Javier Gómez',
+                email: 'javier.z5@visionary.com',
+                pass: 'BarberZ5#1',
+                branch: 'Zona 5',
+                specialty: 'Cortes Clásicos & Cejas',
+                bio: 'Elegancia sobria, cortes ejecutivos de precisión y arqueado de cejas a navaja.',
+                photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=400',
+                hours: ['09:00 AM', '10:00 AM', '11:30 AM', '01:00 PM', '02:30 PM', '04:00 PM', '05:30 PM']
+            },
+            {
+                id: 'barber-z5-2',
+                name: 'Andrés Pérez',
+                email: 'andres.z5@visionary.com',
+                pass: 'BarberZ5#2',
+                branch: 'Zona 5',
+                specialty: 'Fades & Tatuajes',
+                bio: 'Técnica pulida de degradados a la piel y aplicación de tatuajes fine line.',
+                photo: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&q=80&w=400',
+                hours: ['09:30 AM', '11:00 AM', '02:00 PM', '03:30 PM', '05:00 PM', '06:00 PM']
+            },
+            {
+                id: 'barber-z5-3',
+                name: 'Samuel Hernández',
+                email: 'samuel.z5@visionary.com',
+                pass: 'BarberZ5#3',
+                branch: 'Zona 5',
+                specialty: 'Diseño de Uñas & Freestyle',
+                bio: 'Vanguardia en estilismo urbano, manicura de autor y texturizados creativos.',
+                photo: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=400',
+                hours: ['10:00 AM', '11:30 AM', '01:00 PM', '03:00 PM', '04:30 PM', '06:00 PM']
+            }
+        ];
+
+        // SEEDED ACCOUNTS
+        const staffAccounts = [
+            { email: 'admin@visionary.com', pass: 'AdminVisionary2026!', role: 'ADMIN', name: 'Administrador General' },
+            { email: 'cobrador@visionary.com', pass: 'CobradorVisionary2026!', role: 'CASHIER', name: 'Caja y Recepción' },
+            ...initialBarbers.map(b => ({ email: b.email, pass: b.pass, role: 'BARBER', name: b.name, barberData: b }))
+        ];
+
+        // INITIAL APPOINTMENTS
+        const todayStr = new Date().toISOString().split('T')[0];
+        const initialAppointments = [
+            { id: 'VIS-7821', clientName: 'Alejandro Morales', clientPhone: '50241415522', barberName: 'Carlos Ruiz', branch: 'Zona 6', date: todayStr, time: '09:00 AM', serviceName: 'Corte de Cabello Normal / Fade', status: 'REALIZADA', amountPaid: 50 },
+            { id: 'VIS-7822', clientName: 'Fernando Castillo', clientPhone: '50255331199', barberName: 'Carlos Ruiz', branch: 'Zona 6', date: todayStr, time: '10:00 AM', serviceName: 'Arreglo & Perfilado de Barba', status: 'EN_PROCESO', amountPaid: 15 },
+            { id: 'VIS-7823', clientName: 'Rodrigo Fuentes', clientPhone: '50230304411', barberName: 'Carlos Ruiz', branch: 'Zona 6', date: todayStr, time: '11:00 AM', serviceName: 'Corte de Cabello Normal / Fade', status: 'PENDIENTE', amountPaid: 50 },
+            { id: 'VIS-7824', clientName: 'Mario Lemus (Walk-in)', clientPhone: 'Atención Directa', barberName: 'Javier Gómez', branch: 'Zona 5', date: todayStr, time: '09:30 AM', serviceName: 'Corte de Cabello Normal / Fade', status: 'REALIZADA', amountPaid: 50 }
+        ];
+
+        // APP STATE
+        let appointments = JSON.parse(localStorage.getItem('visionary_appointments_standalone')) || initialAppointments;
+        let currentBranchFilter = 'ALL';
+        let selectedServiceItem = null;
+        let activeStaffUser = JSON.parse(localStorage.getItem('visionary_staff_user')) || null;
+        let selectedDate = todayStr;
+
+        let bookingBarberSelected = null;
+        let bookingTimeSelected = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('year').innerText = new Date().getFullYear();
+            
+            const dateInput = document.getElementById('calendar-date-picker');
+            if (dateInput) {
+                dateInput.value = todayStr;
+                dateInput.min = todayStr;
+            }
+            const modalDate = document.getElementById('booking-date');
+            if (modalDate) {
+                modalDate.value = todayStr;
+                modalDate.min = todayStr;
+            }
+
+            renderServices();
+            renderBarbers();
+            populateWalkInBarberOptions();
+            renderQuickAccounts();
+            lucide.createIcons();
+
+            if (activeStaffUser) {
+                updateStaffButtonUI();
+            }
+        });
+
+        function saveAppointments() {
+            localStorage.setItem('visionary_appointments_standalone', JSON.stringify(appointments));
+        }
+
+        function handleDateChange(date) {
+            selectedDate = date;
+            renderBarbers();
+        }
+
+        // 1. RENDER SERVICES CATALOG
+        function renderServices() {
+            const grid = document.getElementById('services-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            initialServices.forEach(s => {
+                const isSelected = selectedServiceItem && selectedServiceItem.id === s.id;
+                const card = document.createElement('div');
+                card.className = `p-6 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between group ${
+                    isSelected ? 'bg-zinc-900 border-white shadow-[0_0_25px_rgba(255,255,255,0.08)]' : 'bg-cardBg border-borderGray hover:border-zinc-700'
+                }`;
+
+                card.onclick = () => {
+                    selectedServiceItem = s;
+                    document.getElementById('service-selected-pill').classList.remove('hidden');
+                    document.getElementById('service-selected-name').innerText = `${s.name} (${s.priceText})`;
+                    
+                    const select = document.getElementById('client-service-select');
+                    if (select) select.value = s.name;
+                    
+                    renderServices();
+                    document.getElementById('barberos').scrollIntoView({ behavior: 'smooth' });
+                };
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 rounded-xl bg-zinc-900 border border-zinc-700 flex items-center justify-center text-white">
+                                <i data-lucide="scissors" class="w-5 h-5"></i>
+                            </div>
+                            <span class="text-2xl font-black text-white font-mono">${s.priceText}</span>
+                        </div>
+                        <div class="text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-1">${s.category}</div>
+                        <h3 class="text-lg font-bold text-white">${s.name}</h3>
+                        <p class="text-xs text-zinc-400 mt-2 leading-relaxed">${s.desc}</p>
+                    </div>
+                    <div class="pt-6 mt-4 border-t border-borderGray flex items-center justify-between text-xs text-zinc-400 font-semibold group-hover:text-white">
+                        <span>${isSelected ? '✓ Seleccionado' : 'Seleccionar'}</span>
+                        <i data-lucide="${isSelected ? 'check-circle' : 'arrow-right'}" class="w-4 h-4"></i>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        // 2. RENDER BARBERS & AVAILABILITY
+        function setBranchFilter(branch) {
+            currentBranchFilter = branch;
+            ['all', 'z6', 'z5'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (btn) btn.className = 'px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all text-zinc-400 hover:text-white';
+            });
+            if (branch === 'ALL') document.getElementById('tab-all').className = 'px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all bg-white text-black shadow-sm';
+            if (branch === 'Zona 6') document.getElementById('tab-z6').className = 'px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all bg-white text-black shadow-sm';
+            if (branch === 'Zona 5') document.getElementById('tab-z5').className = 'px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all bg-white text-black shadow-sm';
+
+            renderBarbers();
+            if (branch !== 'ALL') {
+                document.getElementById('barberos').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function renderBarbers() {
+            const grid = document.getElementById('barbers-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            const filtered = currentBranchFilter === 'ALL'
+                ? initialBarbers
+                : initialBarbers.filter(b => b.branch === currentBranchFilter);
+
+            filtered.forEach(barber => {
+                // Get taken slots for this barber on selected date
+                const takenSlots = appointments
+                    .filter(a => a.barberName === barber.name && a.date === selectedDate && a.status !== 'CANCELADA')
+                    .map(a => a.time);
+
+                const card = document.createElement('div');
+                card.className = 'bg-cardBg rounded-2xl border border-borderGray p-6 flex flex-col justify-between hover:border-zinc-700 transition-all group shadow-sm';
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-start gap-4 mb-5">
+                            <img src="${barber.photo}" alt="${barber.name}" class="w-16 h-16 rounded-2xl object-cover border border-zinc-700 shadow-md grayscale contrast-125">
+                            <div class="flex-1">
+                                <span class="px-2.5 py-0.5 text-[10px] font-mono rounded bg-zinc-900 border border-zinc-700 text-zinc-300 uppercase tracking-wider inline-block mb-1">${barber.branch}</span>
+                                <h3 class="text-xl font-bold text-white">${barber.name}</h3>
+                                <p class="text-xs text-zinc-400 font-medium">${barber.specialty}</p>
+                            </div>
+                        </div>
+
+                        <p class="text-xs text-zinc-400 leading-relaxed mb-6 font-light">${barber.bio}</p>
+
+                        <div class="mb-6">
+                            <div class="flex items-center justify-between text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-3">
+                                <span>Horarios (${selectedDate})</span>
+                                <span class="text-[10px] text-zinc-400">${barber.hours.filter(h => !takenSlots.includes(h)).length} libres</span>
+                            </div>
+
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                ${barber.hours.map(time => {
+                                    const isTaken = takenSlots.includes(time);
+                                    if (isTaken) {
+                                        return `<div class="p-2 rounded-lg bg-zinc-950/80 border border-zinc-900 text-[11px] font-mono text-zinc-600 line-through text-center cursor-not-allowed select-none">${time}</div>`;
+                                    }
+                                    return `<button onclick="openBookingModal('${barber.id}', '${time}')" class="p-2 rounded-lg bg-zinc-900 border border-zinc-800 text-[11px] font-mono text-zinc-300 hover:bg-white hover:text-black hover:border-white transition-all text-center font-medium">${time}</button>`;
+                                }).join('')}
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="openBookingModal('${barber.id}', '${barber.hours.find(h => !takenSlots.includes(h)) || barber.hours[0]}')" 
+                            class="w-full py-3.5 bg-zinc-900 border border-zinc-700 hover:border-white hover:bg-white hover:text-black text-white font-bold rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2">
+                        <i data-lucide="calendar" class="w-4 h-4"></i> Agendar con ${barber.name.split(' ')[0]}
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        // 3. BOOKING MODAL
+        function openBookingModal(barberId, timeSlot) {
+            const barber = initialBarbers.find(b => b.id === barberId);
+            if (!barber) return;
+
+            bookingBarberSelected = barber;
+            bookingTimeSelected = timeSlot;
+
+            document.getElementById('modal-barber-img').src = barber.photo;
+            document.getElementById('modal-barber-name').innerText = barber.name;
+            document.getElementById('modal-barber-branch').innerText = barber.branch;
+            document.getElementById('modal-barber-spec').innerText = barber.specialty;
+            document.getElementById('booking-time').value = timeSlot;
+            document.getElementById('booking-date').value = selectedDate;
+
+            const modal = document.getElementById('booking-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeBookingModal() {
+            const modal = document.getElementById('booking-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function confirmBooking(e) {
+            e.preventDefault();
+            const clientName = document.getElementById('client-name').value;
+            const clientPhone = document.getElementById('client-phone').value;
+            const date = document.getElementById('booking-date').value;
+            const serviceName = document.getElementById('client-service-select').value;
+
+            const newAppointment = {
+                id: 'VIS-' + Math.floor(1000 + Math.random() * 9000),
+                clientName,
+                clientPhone,
+                barberName: bookingBarberSelected.name,
+                branch: bookingBarberSelected.branch,
+                date,
+                time: bookingTimeSelected,
+                serviceName,
+                status: 'PENDIENTE',
+                amountPaid: 50
+            };
+
+            appointments.push(newAppointment);
+            saveAppointments();
+            closeBookingModal();
+            renderBarbers();
+            showSuccessModal(newAppointment);
+
+            document.getElementById('booking-form').reset();
+        }
+
+        function showSuccessModal(apt) {
+            const container = document.getElementById('success-details');
+            container.innerHTML = `
+                <div class="flex justify-between border-b border-zinc-800 pb-2"><span class="text-zinc-500">CÓDIGO:</span> <strong class="text-white">${apt.id}</strong></div>
+                <div class="flex justify-between"><span class="text-zinc-500">CLIENTE:</span> <span class="text-white">${apt.clientName}</span></div>
+                <div class="flex justify-between"><span class="text-zinc-500">TELÉFONO:</span> <span class="text-zinc-300">${apt.clientPhone}</span></div>
+                <div class="flex justify-between"><span class="text-zinc-500">SERVICIO:</span> <span class="text-white">${apt.serviceName}</span></div>
+                <div class="flex justify-between"><span class="text-zinc-500">BARBERO:</span> <span class="text-white">${apt.barberName}</span></div>
+                <div class="flex justify-between"><span class="text-zinc-500">SEDE:</span> <span class="text-white">${apt.branch}</span></div>
+                <div class="flex justify-between border-t border-zinc-800 pt-2"><span class="text-zinc-500">FECHA Y HORA:</span> <strong class="text-white">${apt.date} a las ${apt.time}</strong></div>
+            `;
+
+            const text = `*Confirmación de Cita - VISIONARY BARBER SHOP*%0A%0A*Código:* ${apt.id}%0A*Cliente:* ${apt.clientName}%0A*Servicio:* ${apt.serviceName}%0A*Barbero:* ${apt.barberName}%0A*Sede:* ${apt.branch}%0A*Fecha:* ${apt.date} - ${apt.time}`;
+            document.getElementById('whatsapp-link').href = `https://wa.me/?text=${text}`;
+
+            const modal = document.getElementById('success-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            lucide.createIcons();
+        }
+
+        function closeSuccessModal() {
+            const modal = document.getElementById('success-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // 4. AUTH & STAFF LOGINS
+        function openLoginModal() {
+            if (activeStaffUser) {
+                showSection('staff');
+                return;
+            }
+            document.getElementById('login-error-msg').classList.add('hidden');
+            const modal = document.getElementById('login-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeLoginModal() {
+            const modal = document.getElementById('login-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function renderQuickAccounts() {
+            const container = document.getElementById('quick-accounts-list');
+            if (!container) return;
+            container.innerHTML = '';
+
+            staffAccounts.forEach(acc => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'w-full p-2 rounded-xl border border-borderGray bg-zinc-900/60 text-left flex items-center justify-between hover:bg-zinc-900 hover:border-zinc-600 transition-all';
+                btn.onclick = () => {
+                    document.getElementById('login-email').value = acc.email;
+                    document.getElementById('login-pass').value = acc.pass;
+                    document.getElementById('login-error-msg').classList.add('hidden');
+                };
+
+                btn.innerHTML = `
+                    <div class="truncate pr-2">
+                        <div class="text-xs font-semibold text-white truncate">${acc.name}</div>
+                        <div class="text-[10px] font-mono text-zinc-400 truncate">${acc.email}</div>
+                    </div>
+                    <span class="text-[9px] font-mono uppercase px-2 py-0.5 rounded bg-zinc-950 border border-zinc-800 text-zinc-400 shrink-0">${acc.role}</span>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        function executeLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim().toLowerCase();
+            const pass = document.getElementById('login-pass').value;
+
+            const found = staffAccounts.find(a => a.email.toLowerCase() === email && a.pass === pass);
+            if (!found) {
+                document.getElementById('login-error-msg').classList.remove('hidden');
+                return;
+            }
+
+            activeStaffUser = found;
+            localStorage.setItem('visionary_staff_user', JSON.stringify(found));
+            closeLoginModal();
+            updateStaffButtonUI();
+            showSection('staff');
+        }
+
+        function logoutStaff() {
+            activeStaffUser = null;
+            localStorage.removeItem('visionary_staff_user');
+            updateStaffButtonUI();
+            showSection('public');
+        }
+
+        function updateStaffButtonUI() {
+            const textEl = document.getElementById('staff-btn-text');
+            if (activeStaffUser) {
+                textEl.innerText = `Panel (${activeStaffUser.role})`;
+            } else {
+                textEl.innerText = 'Acceso Staff';
+            }
+        }
+
+        function showSection(sectionName) {
+            const publicView = document.getElementById('public-view');
+            const staffView = document.getElementById('staff-view');
+
+            if (sectionName === 'staff') {
+                if (!activeStaffUser) {
+                    openLoginModal();
+                    return;
+                }
+                publicView.classList.add('hidden');
+                staffView.classList.remove('hidden');
+                renderStaffDashboard();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                publicView.classList.remove('hidden');
+                staffView.classList.add('hidden');
+                renderBarbers();
+            }
+        }
+
+        // 5. STAFF DASHBOARDS
+        function renderStaffDashboard() {
+            if (!activeStaffUser) return;
+
+            document.getElementById('current-user-name').innerText = activeStaffUser.name;
+            document.getElementById('current-user-role-badge').innerText = activeStaffUser.role;
+            document.getElementById('current-user-subtext').innerText = activeStaffUser.email;
+
+            document.querySelectorAll('.staff-panel').forEach(p => p.classList.add('hidden'));
+
+            if (activeStaffUser.role === 'BARBER') {
+                document.getElementById('panel-barber').classList.remove('hidden');
+                document.getElementById('barber-today-date').innerText = new Date().toLocaleDateString('es-GT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                renderBarberAppointments();
+            } else if (activeStaffUser.role === 'CASHIER') {
+                document.getElementById('panel-cashier').classList.remove('hidden');
+                renderCashierAppointments();
+            } else if (activeStaffUser.role === 'ADMIN') {
+                document.getElementById('panel-admin').classList.remove('hidden');
+                renderAdminDashboard();
+            }
+            lucide.createIcons();
+        }
+
+        function renderBarberAppointments() {
+            const list = document.getElementById('barber-appointments-list');
+            list.innerHTML = '';
+
+            const myAppointments = appointments.filter(a => a.barberName === activeStaffUser.name);
+
+            if (myAppointments.length === 0) {
+                list.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-zinc-500">No tienes citas registradas asignadas por el momento.</td></tr>`;
+                return;
+            }
+
+            myAppointments.forEach(apt => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-zinc-900/40 transition-colors';
+
+                tr.innerHTML = `
+                    <td class="p-4">
+                        <div class="font-bold text-white text-sm">${apt.time}</div>
+                        <div class="text-[10px] text-zinc-500">${apt.date} • ${apt.id}</div>
+                    </td>
+                    <td class="p-4 font-sans font-medium text-white">${apt.clientName}</td>
+                    <td class="p-4 text-zinc-400">${apt.clientPhone}</td>
+                    <td class="p-4 font-sans text-xs text-zinc-300">${apt.serviceName || 'Corte General'}</td>
+                    <td class="p-4"><span class="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-300">${apt.branch}</span></td>
+                    <td class="p-4"><span class="px-2.5 py-1 text-[10px] rounded-full border ${apt.status === 'REALIZADA' ? 'bg-zinc-800 text-white border-zinc-600' : 'bg-zinc-950 text-zinc-400 border-zinc-800'}">${apt.status}</span></td>
+                    <td class="p-4 text-right">
+                        ${apt.status !== 'REALIZADA' ? `
+                            <button onclick="updateAppointmentStatus('${apt.id}', 'REALIZADA')" class="px-3 py-1.5 bg-white text-black font-bold rounded-lg text-xs hover:bg-zinc-200 transition-all">
+                                Finalizar
+                            </button>
+                        ` : '<span class="text-zinc-500 text-xs">Completada</span>'}
+                    </td>
+                `;
+                list.appendChild(tr);
+            });
+        }
+
+        function renderCashierAppointments() {
+            const list = document.getElementById('cashier-appointments-list');
+            const searchVal = document.getElementById('cashier-search')?.value.toLowerCase() || '';
+            list.innerHTML = '';
+
+            const filtered = appointments.filter(a =>
+                a.clientName.toLowerCase().includes(searchVal) ||
+                a.clientPhone.toLowerCase().includes(searchVal) ||
+                a.barberName.toLowerCase().includes(searchVal)
+            );
+
+            if (filtered.length === 0) {
+                list.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-zinc-500">Sin citas encontradas.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(apt => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-zinc-900/40 transition-colors';
+                const isDone = apt.status === 'REALIZADA';
+
+                tr.innerHTML = `
+                    <td class="p-4">
+                        <div class="font-sans font-bold text-white text-sm">${apt.clientName}</div>
+                        <div class="text-zinc-500 text-[11px]">${apt.clientPhone} • ${apt.id}</div>
+                    </td>
+                    <td class="p-4 font-sans text-xs text-zinc-300">${apt.barberName}</td>
+                    <td class="p-4"><span class="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-300">${apt.branch}</span></td>
+                    <td class="p-4 text-zinc-400">${apt.date} <br><strong class="text-white">${apt.time}</strong></td>
+                    <td class="p-4"><span class="px-2.5 py-1 text-[10px] rounded-full border ${isDone ? 'bg-zinc-800 text-white border-zinc-600' : 'bg-zinc-950 text-zinc-400 border-zinc-800'}">${apt.status}</span></td>
+                    <td class="p-4 text-right">
+                        ${!isDone ? `
+                            <button onclick="updateAppointmentStatus('${apt.id}', 'REALIZADA')" class="px-3.5 py-2 bg-white text-black font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-zinc-200 transition-all shadow-md">
+                                Cobrar
+                            </button>
+                        ` : `<span class="text-zinc-400 text-xs font-mono">Cobrado (Q${apt.amountPaid || 50})</span>`}
+                    </td>
+                `;
+                list.appendChild(tr);
+            });
+        }
+
+        function filterCashierAppointments() {
+            renderCashierAppointments();
+        }
+
+        function populateWalkInBarberOptions() {
+            const select = document.getElementById('walkin-barber');
+            if (!select) return;
+            select.innerHTML = '';
+
+            initialBarbers.forEach(b => {
+                const opt = document.createElement('option');
+                opt.value = b.name;
+                opt.innerText = `${b.name} (${b.branch})`;
+                select.appendChild(opt);
+            });
+        }
+
+        function handleWalkInSubmit(e) {
+            e.preventDefault();
+            const clientName = document.getElementById('walkin-client').value;
+            const barberName = document.getElementById('walkin-barber').value;
+            const serviceName = document.getElementById('walkin-service').value;
+            const amountPaid = document.getElementById('walkin-amount').value;
+
+            const barberObj = initialBarbers.find(b => b.name === barberName);
+
+            const walkInApt = {
+                id: 'WLK-' + Math.floor(1000 + Math.random() * 9000),
+                clientName: clientName + ' (Walk-in)',
+                clientPhone: 'Atención Directa',
+                barberName,
+                branch: barberObj ? barberObj.branch : 'Zona 6',
+                date: new Date().toISOString().split('T')[0],
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                serviceName,
+                status: 'REALIZADA',
+                amountPaid: Number(amountPaid) || 50
+            };
+
+            appointments.push(walkInApt);
+            saveAppointments();
+            document.getElementById('walk-in-form').reset();
+            renderCashierAppointments();
+            alert('Corte Walk-in registrado y facturado exitosamente.');
+        }
+
+        function renderAdminDashboard() {
+            const total = appointments.length;
+            const completed = appointments.filter(a => a.status === 'REALIZADA').length;
+            const revenue = appointments
+                .filter(a => a.status === 'REALIZADA')
+                .reduce((acc, curr) => acc + (curr.amountPaid || 50), 0);
+
+            const z6Count = appointments.filter(a => a.branch === 'Zona 6').length;
+            const z5Count = appointments.filter(a => a.branch === 'Zona 5').length;
+
+            document.getElementById('stat-total-citas').innerText = total;
+            document.getElementById('stat-citas-completadas').innerText = completed;
+            document.getElementById('stat-ingresos').innerText = `Q${revenue}`;
+            document.getElementById('stat-z6').innerText = z6Count;
+            document.getElementById('stat-z5').innerText = z5Count;
+
+            const z6Percent = total > 0 ? (z6Count / total) * 100 : 50;
+            const z5Percent = total > 0 ? (z5Count / total) * 100 : 50;
+            document.getElementById('bar-z6').style.width = `${z6Percent}%`;
+            document.getElementById('bar-z5').style.width = `${z5Percent}%`;
+
+            const list = document.getElementById('admin-appointments-list');
+            list.innerHTML = '';
+
+            appointments.forEach(apt => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-zinc-900/40 transition-colors';
+
+                tr.innerHTML = `
+                    <td class="p-4 font-mono font-bold text-white">${apt.id}</td>
+                    <td class="p-4 font-sans font-medium text-white">${apt.clientName}<span class="block text-[10px] text-zinc-500 font-mono">${apt.clientPhone}</span></td>
+                    <td class="p-4 font-sans text-xs text-zinc-300">${apt.barberName}</td>
+                    <td class="p-4"><span class="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-300">${apt.branch}</span></td>
+                    <td class="p-4 text-zinc-400">${apt.date} • <strong class="text-white">${apt.time}</strong></td>
+                    <td class="p-4 font-sans text-xs text-zinc-300">${apt.serviceName || 'Corte General'}</td>
+                    <td class="p-4"><span class="px-2.5 py-1 text-[10px] rounded-full border ${apt.status === 'REALIZADA' ? 'bg-zinc-800 text-white border-zinc-600' : 'bg-zinc-950 text-zinc-400 border-zinc-800'}">${apt.status}</span></td>
+                    <td class="p-4 text-right space-x-2">
+                        ${apt.status !== 'REALIZADA' ? `<button onclick="updateAppointmentStatus('${apt.id}', 'REALIZADA')" class="px-2.5 py-1 bg-zinc-800 hover:bg-white hover:text-black rounded text-[11px] transition-all">Cobrar</button>` : ''}
+                        <button onclick="deleteAppointment('${apt.id}')" class="text-zinc-500 hover:text-white p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </td>
+                `;
+                list.appendChild(tr);
+            });
+            lucide.createIcons();
+        }
+
+        function updateAppointmentStatus(aptId, newStatus) {
+            const index = appointments.findIndex(a => a.id === aptId);
+            if (index !== -1) {
+                appointments[index].status = newStatus;
+                saveAppointments();
+                renderStaffDashboard();
+            }
+        }
+
+        function deleteAppointment(aptId) {
+            if (confirm(`¿Eliminar la cita ${aptId}?`)) {
+                appointments = appointments.filter(a => a.id !== aptId);
+                saveAppointments();
+                renderAdminDashboard();
+            }
+        }
+    </script>
+</body>
+</html>
