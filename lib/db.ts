@@ -126,10 +126,13 @@ export async function getAdminMetrics() {
   };
 }
 
-export async function updateAppointmentStatus(id: string, status: string) {
+export async function updateAppointmentStatus(id: string, status: string, amountPaid?: number) {
   return await prisma.appointment.update({
     where: { id },
-    data: { status },
+    data: {
+      status,
+      ...(amountPaid !== undefined && { amountPaid }),
+    },
   });
 }
 
