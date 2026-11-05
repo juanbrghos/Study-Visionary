@@ -1,1 +1,1 @@
-{"version":1,"functions":{}}
+{"version":1,"functions":{"/api/admin/metrics":{},"/api/auth/login":{},"/api/appointments/[id]":{},"/api/appointments":{},"/api/availability":{},"/api/appointments/walkin":{},"/api/barbers":{}}}
