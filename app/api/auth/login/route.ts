@@ -13,7 +13,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const user = authenticateUser(email.trim().toLowerCase(), password);
+    const user = await authenticateUser(email.trim().toLowerCase(), password);
 
     if (!user) {
       return NextResponse.json(

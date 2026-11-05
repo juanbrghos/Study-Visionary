@@ -13,7 +13,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const walkIn = createWalkIn({
+    const walkIn = await createWalkIn({
       clientName: clientName.trim(),
       barberId,
       locationId,

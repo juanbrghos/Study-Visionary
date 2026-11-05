@@ -10,7 +10,7 @@ export async function GET(request: Request) {
     const status = searchParams.get('status') || undefined;
     const search = searchParams.get('search') || undefined;
 
-    const appointments = getAppointments({
+    const appointments = await getAppointments({
       barberId,
       locationId,
       date,
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const appointment = createAppointment({
+    const appointment = await createAppointment({
       clientName: clientName.trim(),
       clientPhone: clientPhone.trim(),
       date,

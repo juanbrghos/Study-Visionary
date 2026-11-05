@@ -1,13 +1,13 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
-  "/api/admin/metrics/route": "app/api/admin/metrics/route.js",
-  "/api/auth/login/route": "app/api/auth/login/route.js",
-  "/api/appointments/[id]/route": "app/api/appointments/[id]/route.js",
   "/api/appointments/walkin/route": "app/api/appointments/walkin/route.js",
-  "/api/locations/route": "app/api/locations/route.js",
+  "/api/auth/login/route": "app/api/auth/login/route.js",
   "/api/appointments/route": "app/api/appointments/route.js",
-  "/api/services/route": "app/api/services/route.js",
-  "/api/barbers/route": "app/api/barbers/route.js",
+  "/api/appointments/[id]/route": "app/api/appointments/[id]/route.js",
   "/api/availability/route": "app/api/availability/route.js",
-  "/page": "app/page.js"
+  "/api/admin/metrics/route": "app/api/admin/metrics/route.js",
+  "/api/barbers/route": "app/api/barbers/route.js",
+  "/api/services/route": "app/api/services/route.js",
+  "/page": "app/page.js",
+  "/api/locations/route": "app/api/locations/route.js"
 }

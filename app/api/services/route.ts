@@ -3,7 +3,7 @@ import { getServices } from '@/lib/db';
 
 export async function GET() {
   try {
-    const services = getServices();
+    const services = await getServices();
     return NextResponse.json({ services });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
